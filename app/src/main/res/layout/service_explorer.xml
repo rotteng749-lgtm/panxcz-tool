@@ -1,48 +1,114 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- Explorer tab: browser kelas IL2CPP (logic port dari Android-LibTool-New
+     ClassesTab — data asli dari panxcz_rpc root helper, bukan stub). -->
+<android.fix.LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/explorer_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="4dp">
+    android:paddingLeft="4.0dip"
+    android:paddingRight="4.0dip"
+    android:paddingTop="2.0dip"
+    android:paddingBottom="2.0dip">
 
-    <TextView
-        android:id="@+id/explorer_title"
-        android:layout_width="match_parent"
+    <android.fix.LinearLayout
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="panxcz Explorer — IL2CPP Class / Field / Method"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:padding="4dp" />
+        android:baselineAligned="false"
+        android:orientation="horizontal">
 
-    <EditText
-        android:id="@+id/explorer_input"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Class name (e.g. Hero, PlayerData)" />
-
-    <Button
-        android:id="@+id/explorer_search"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Explore" />
-
-    <Button
-        android:id="@+id/explorer_dump"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Dump Assembly-CSharp" />
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
-        <TextView
-            android:id="@+id/explorer_output"
-            android:layout_width="match_parent"
+        <android.fix.EditText
+            android:id="@+id/explorer_input"
+            android:layout_width="0.0dip"
             android:layout_height="wrap_content"
-            android:textSize="10sp"
-            android:typeface="monospace"
-            android:padding="4dp" />
-    </ScrollView>
-</LinearLayout>
+            android:layout_weight="1.0"
+            android:hint="package game (lalu Attach)"
+            android:inputType="text"
+            android:textColor="#ffffffff"
+            android:textColorHint="#66ffffff"
+            android:textSize="13.0sp" />
+
+        <android.fix.TextButtonView
+            android:id="@+id/explorer_attach"
+            android:textAppearance="@style/SmallText"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:text="Attach" />
+    </android.fix.LinearLayout>
+
+    <android.fix.LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:baselineAligned="false"
+        android:orientation="horizontal">
+
+        <android.fix.EditText
+            android:id="@+id/explorer_filter"
+            android:layout_width="0.0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.0"
+            android:hint="filter (kosong = semua)"
+            android:inputType="text"
+            android:textColor="#ffffffff"
+            android:textColorHint="#66ffffff"
+            android:textSize="13.0sp" />
+
+        <android.fix.TextButtonView
+            android:id="@+id/explorer_search"
+            android:textAppearance="@style/SmallText"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:text="List" />
+
+        <android.fix.TextButtonView
+            android:id="@+id/explorer_back"
+            android:textAppearance="@style/SmallText"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:visibility="gone"
+            android:text="&#9664;" />
+
+        <android.fix.TextButtonView
+            android:id="@+id/explorer_dump"
+            android:textAppearance="@style/SmallText"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:text="Dump .cs" />
+    </android.fix.LinearLayout>
+
+    <android.fix.ListView
+        android:id="@+id/explorer_list"
+        android:layout_width="fill_parent"
+        android:layout_height="0.0dip"
+        android:layout_weight="1.0"
+        android:divider="#44ffffff"
+        android:dividerHeight="1.0dip"
+        android:fastScrollEnabled="true" />
+
+    <android.fix.TextView
+        android:id="@+id/explorer_status"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/SmallText"
+        android:text="belum attach — ketik package lalu Attach"
+        android:textColor="#88ffffff" />
+
+    <android.fix.ScrollView
+        android:id="@+id/explorer_scroll"
+        android:layout_width="fill_parent"
+        android:layout_height="120.0dip">
+
+        <android.fix.TextView
+            android:id="@+id/explorer_output"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:padding="2.0dip"
+            android:textColor="#ff9fe69f"
+            android:textSize="10.0sp"
+            android:typeface="monospace" />
+    </android.fix.ScrollView>
+</android.fix.LinearLayout>

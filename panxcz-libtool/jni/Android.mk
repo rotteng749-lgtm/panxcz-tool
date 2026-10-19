@@ -82,3 +82,23 @@ LOCAL_SRC_FILES := src/jni/bridge.cpp \
     src/core/memview.cpp src/core/keys.cpp
 LOCAL_LDLIBS := -llog -ldl -lz
 include $(BUILD_SHARED_LIBRARY)
+
+# ---- RPC server ELF (root helper buat app panxcz-tool) ---------------------
+# Core yang SAMA kayak ELF overlay di atas, tapi tanpa ImGui/EGL: JSON-line
+# server di stdin/stdout. App (uid biasa) jalanin ini lewat `su -c ... --rpc`
+# biar core-nya dapet akses /proc/<pid>/mem sebagai root -- explorer/dump/
+# patch/gencode dipanggil dari UI Java app.
+include $(CLEAR_VARS)
+LOCAL_MODULE := panxcz_rpc
+LOCAL_CFLAGS := $(_CF) -std=c99
+LOCAL_CPPFLAGS := $(_CF) -std=c++17 -fexceptions -fno-rtti
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/include $(LOCAL_PATH)/src
+LOCAL_SRC_FILES := src/rpc/rpc.cpp \
+    src/core/abort.cpp src/core/bypass.cpp src/core/gencode.cpp \
+    src/core/il2cpp.cpp src/core/explore.cpp src/core/log.cpp \
+    src/core/libdump.cpp src/core/mem.cpp src/core/metapool.cpp \
+    src/core/offlinedump.cpp src/core/patch.cpp src/core/safe.cpp \
+    src/core/scanner.cpp src/core/target.cpp src/core/dumpout.cpp \
+    src/core/memview.cpp src/core/keys.cpp
+LOCAL_LDLIBS := -llog -ldl -lz
+include $(BUILD_EXECUTABLE)

@@ -65,7 +65,20 @@ mkdir -p "$DEST"
 cp -f "$SO" "$DEST/libpanxcz.so"
 chmod 644 "$DEST/libpanxcz.so"
 
+# --- copy ELF RPC ke assets APK (dipakai Panxcz.java, spawn via su) --------
+RPC="$LIBTOOL/libs/$ABI/panxcz_rpc"
+if [ -f "$RPC" ]; then
+    ADEST="$HERE/app/src/main/assets"
+    mkdir -p "$ADEST"
+    cp -f "$RPC" "$ADEST/panxcz_rpc"
+    chmod 755 "$ADEST/panxcz_rpc"
+    echo "[+] panxcz_rpc -> app/src/main/assets/panxcz_rpc"
+else
+    echo "[!] panxcz_rpc nggak keproduksi (explorer RPC nggak jalan)" >&2
+fi
+
 echo
 echo "[+] native siap:"
 ls -lh "$DEST/libpanxcz.so" | awk '{printf "    %10s  %s\n", $5, $9}'
+[ -f "$ADEST/panxcz_rpc" ] && ls -lh "$ADEST/panxcz_rpc" | awk '{printf "    %10s  %s\n", $5, $9}'
 echo "    ELF standalone: panxcz-libtool/out/panxcz_libtool"

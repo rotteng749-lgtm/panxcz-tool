@@ -108,6 +108,7 @@ public class MainService extends ServiceBase implements View.OnClickListener, Vi
     ConfigListAdapter mConfigListAdapter;
     ListView mConfigListView;
     View mConfigPage;
+    ExplorerPanel mExplorerPanel;
     View mCountWait;
     DaemonManager mDaemonManager;
     TextView mFilter;
@@ -230,7 +231,7 @@ public class MainService extends ServiceBase implements View.OnClickListener, Vi
         this.processInfo = null;
         this.showedErrors = new SparseBooleanArray();
         this.pendingScriptEnds = new ArrayList<>();
-        this.oldBkg = new int[3];
+        this.oldBkg = new int[4];
         this.savedListUpdate = new Runnable() { // from class: android.ext.MainService.1
             @Override // java.lang.Runnable
             public void run() {
@@ -1664,9 +1665,12 @@ public class MainService extends ServiceBase implements View.OnClickListener, Vi
         if (created) {
             int pageIndex = getTabIndex() - 1;
             int isLandscape = Tools.isLandscape();
-            boolean showToolbar = (Config.toolbars & (1 << ((pageIndex * 2) + isLandscape))) != 0;
+            // The explorer tab has no toolbar defined (toolbars[] covers search/saved/memory only);
+            // without this guard pageIndex can exceed the arrays (AIOOBE) or show an empty toolbar row.
+            boolean showToolbar = pageIndex >= 0 && pageIndex < this.toolbars.length
+                    && (Config.toolbars & (1 << ((pageIndex * 2) + isLandscape))) != 0;
             int backgrounds = Config.backgrounds;
-            if (pageIndex >= 0 && this.oldBkg[pageIndex] != backgrounds) {
+            if (pageIndex >= 0 && pageIndex < this.oldBkg.length && this.oldBkg[pageIndex] != backgrounds) {
                 this.oldBkg[pageIndex] = backgrounds;
                 int bkg = ((1 << pageIndex) & backgrounds) == 0 ? 0 : -16777216;
                 View tab = this.mMainScreen.getCurrentView();
@@ -1865,6 +1869,14 @@ public class MainService extends ServiceBase implements View.OnClickListener, Vi
         initTab("saved", R.id.saved_page, R.id.saved_tab_icon);
         initTab("memory", R.id.memory_editor_page, R.id.memory_tab_icon);
         initTab("explorer", R.id.explorer_page, R.id.memory_tab_icon);
+        try {
+            View explorerRoot = mMainScreen.findViewById(R.id.explorer_page);
+            if (explorerRoot != null) {
+                this.mExplorerPanel = new ExplorerPanel(this, explorerRoot);
+            }
+        } catch (Throwable e) {
+            Log.w("Explorer", "panel init failed", e);
+        }
         TabWidget tabs = mMainScreen.getTabWidget();
         for (int i = 0; i < tabs.getTabCount(); i++) {
             View view = tabs.getChildTabViewAt(i);

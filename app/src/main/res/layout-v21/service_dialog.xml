@@ -71,6 +71,9 @@
                     <android.fix.TextView android:textAppearance="@style/MediumText" android:id="@id/empty_list_text" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/empty_list" />
                 </android.fix.ScrollView>
             </android.fix.LinearLayout>
+            <android.fix.LinearLayout android:orientation="vertical" android:id="@id/explorer_page" android:layout_width="fill_parent" android:layout_height="fill_parent">
+                <include layout="@layout/service_explorer" />
+            </android.fix.LinearLayout>
         </android.fix.FrameLayout>
         <android.fix.TextButtonView android:textAppearance="@style/SmallText" android:gravity="center" android:id="@id/status_bar" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginRight="60.0dip" android:text="8.40.0  +  Ch,Jh,Ca,Cd,Cb,A,S,O" android:layout_weight="0.0" />
     </android.fix.LinearLayout>

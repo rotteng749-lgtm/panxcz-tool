@@ -214,6 +214,7 @@ class DaemonManager {
             }
             if (fifo == 49) {
                 boolean use = false;
+                fixDaemonFifo(dir);
                 try {
                     OutputStream old = proc.stdin;
                     try {
@@ -248,6 +249,26 @@ class DaemonManager {
             return ret;
         }
         return ret;
+    }
+
+    /**
+     * The daemon runs as root (su), so the FIFOs it creates may have a root-owned
+     * umask mode and a root MLS level (s0) that does not match the app's data file
+     * categories (s0:cXXX,...). On enforcing SELinux devices the app then fails to
+     * open them (EACCES - "Failed to load daemon"). Fix both as root before the
+     * app tries to open the FIFOs: world rw mode + copy the parent dir context.
+     */
+    private static void fixDaemonFifo(File dir) {
+        try {
+            String path = dir.getAbsolutePath();
+            String cmd = "exec sh -c 'chmod 0666 \"$1/i\" \"$1/o\" \"$1/e\" 2>/dev/null; "
+                    + "O=$(ls -laZd \"$1\" 2>/dev/null); C=\"\"; for w in $O; do case $w in *:object_r:*) C=$w;; esac; done; "
+                    + "[ -n \"$C\" ] && chcon \"$C\" \"$1/i\" \"$1/o\" \"$1/e\" 2>/dev/null; exit' _ \"" + path + "\"";
+            String r = RootDetector.runCmd(cmd, 10);
+            Log.d("Fifo fix: " + r);
+        } catch (Throwable e) {
+            Log.w("Fifo fix fail", e);
+        }
     }
 
     public static String getNativeCheck() {
