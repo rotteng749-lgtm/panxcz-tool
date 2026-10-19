@@ -22,3 +22,7 @@ build/
 /GameGuardian (96.0) Src.zip
 /gradle-8.*
 /gradle-9.*
+
+local.properties
+app/libs/*.jar
+app/keystore/*.jks

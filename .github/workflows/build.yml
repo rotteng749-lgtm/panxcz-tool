@@ -25,23 +25,25 @@ jobs:
         with:
           gradle-version: 9.5.1
 
-      - name: Setup Android SDK (compileSdk 36)
+      - name: Setup Android SDK (compileSdk 36 + NDK r28b)
         uses: android-actions/setup-android@v3
         with:
-          cmdline-tools-version: "11076708"
-          build-tools-version: "36.0.0"
-          platforms: "android-36"
-          ndk-version: "r28b"
+          packages: 'platform-tools platforms;android-36 build-tools;36.0.0 ndk;28.2.13676358'
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ hashFiles('**/*.gradle', 'gradle/wrapper/gradle-wrapper.properties') }}
+          restore-keys: gradle-
 
       - name: Build native libpanxcz.so
         run: ./build_native.sh
-        env:
-          ANDROID_HOME: ${{ env.ANDROID_HOME }}
 
       - name: Build release APK
-        run: ./gradlew :app:assembleRelease --stacktrace
-        env:
-          ANDROID_HOME: ${{ env.ANDROID_HOME }}
+        run: ./gradlew :app:assembleRelease --stacktrace --no-daemon
 
       - name: Upload unsigned APK
         uses: actions/upload-artifact@v4
@@ -49,14 +51,26 @@ jobs:
           name: panxcz-tool-release-unsigned
           path: app/build/outputs/apk/release/app-release-unsigned.apk
 
-      - name: Sign APK (optional — needs private repo secret)
-        if: env.KEYSTORE_PASSWORD != ''
+      - name: Sign APK (butuh secret PRIVATE_REPO_TOKEN + KEYSTORE_PASSWORD)
+        if: ${{ secrets.PRIVATE_REPO_TOKEN != '' }}
         run: |
-          # Clone private keystore repo (requires PAT in secrets)
-          git clone --depth 1 https://x-access-token:${{ secrets.PRIVATE_REPO_TOKEN }}@github.com/${{ github.repository_owner }}/panxcz-keystore.git /tmp/keystore-clone || true
-          if [ -f /tmp/keystore-clone/keystore/panxcz-release.jks ]; then
-            cp /tmp/keystore-clone/keystore/panxcz-release.jks app/keystore/
-            ./gradlew :app:assembleRelease -PsigningEnabled=true -PstorePass=${{ secrets.KEYSTORE_PASSWORD }} -Palias=panxcz_release -PkeyPass=${{ secrets.KEYSTORE_PASSWORD }} --stacktrace
-          fi
+          git clone --depth 1 \
+            "https://x-access-token:${{ secrets.PRIVATE_REPO_TOKEN }}@github.com/${{ github.repository_owner }}/panxcz-keystore.git" \
+            /tmp/keystore-clone
+          mkdir -p app/keystore
+          cp /tmp/keystore-clone/keystore/panxcz-release.jks app/keystore/
+          ./gradlew :app:assembleRelease \
+            -PsigningEnabled=true \
+            -PstorePass=${{ secrets.KEYSTORE_PASSWORD }} \
+            -Palias=panxcz_release \
+            -PkeyPass=${{ secrets.KEYSTORE_PASSWORD }} \
+            --stacktrace --no-daemon
         env:
           ANDROID_HOME: ${{ env.ANDROID_HOME }}
+
+      - name: Upload signed APK
+        if: ${{ secrets.PRIVATE_REPO_TOKEN != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: panxcz-tool-release-signed
+          path: app/build/outputs/apk/release/app-release.apk
