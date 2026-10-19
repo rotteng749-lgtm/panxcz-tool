@@ -31,6 +31,20 @@ for c in "${NDK_CANDIDATES[@]}"; do
     if [ -x "$c/ndk-build" ]; then NDK="$c"; break; fi
 done
 
+# fallback: NDK bawaan Android SDK (lokal maupun GitHub Actions):
+#   $ANDROID_SDK_ROOT/ndk/<ver>/ndk-build dsb.
+if [ -z "$NDK" ]; then
+    for sdk in "${ANDROID_SDK_ROOT:-}" "${ANDROID_HOME:-}" \
+               "$HOME/Android/Sdk" "/usr/lib/android-sdk"; do
+        [ -n "$sdk" ] || continue
+        for d in "$sdk"/ndk/*; do
+            [ -x "$d/ndk-build" ] || continue
+            NDK="$d"
+            break 2
+        done
+    done
+fi
+
 if [ -z "$NDK" ]; then
     echo "[x] NDK r28b nggak ketemu." >&2
     echo "    Taruh di: /home/panxcz/Documents/workspace/16251728/ndk/android-ndk-r28b" >&2
