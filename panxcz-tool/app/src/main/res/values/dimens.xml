@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="button_text_size">14.0sp</dimen>
+    <dimen name="key_width">41.139984dip</dimen>
+    <dimen name="key_height">48.0dip</dimen>
+    <dimen name="checkbox_item_width">48.0dip</dimen>
+    <dimen name="floating_window_top_button_text_size">25sp</dimen>
+    <dimen name="floating_window_section_title_text_size">18sp</dimen>
+    <dimen name="floating_window_title_text_size">16sp</dimen>
+    <dimen name="floating_window_text_size">14sp</dimen>
+    <dimen name="floating_window_small_text_size">12sp</dimen>
+    <dimen name="floating_window_padding_5">5dp</dimen>
+    <dimen name="floating_window_padding_10">10dp</dimen>
+    <dimen name="floating_window_padding_20">20dp</dimen>
+</resources>

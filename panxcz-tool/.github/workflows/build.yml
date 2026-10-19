@@ -1,0 +1,62 @@
+name: Build panxcz-tool APK
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Gradle 9.5.1
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: 9.5.1
+
+      - name: Setup Android SDK (compileSdk 36)
+        uses: android-actions/setup-android@v3
+        with:
+          cmdline-tools-version: "11076708"
+          build-tools-version: "36.0.0"
+          platforms: "android-36"
+          ndk-version: "r28b"
+
+      - name: Build native libpanxcz.so
+        run: ./build_native.sh
+        env:
+          ANDROID_HOME: ${{ env.ANDROID_HOME }}
+
+      - name: Build release APK
+        run: ./gradlew :app:assembleRelease --stacktrace
+        env:
+          ANDROID_HOME: ${{ env.ANDROID_HOME }}
+
+      - name: Upload unsigned APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: panxcz-tool-release-unsigned
+          path: app/build/outputs/apk/release/app-release-unsigned.apk
+
+      - name: Sign APK (optional — needs private repo secret)
+        if: env.KEYSTORE_PASSWORD != ''
+        run: |
+          # Clone private keystore repo (requires PAT in secrets)
+          git clone --depth 1 https://x-access-token:${{ secrets.PRIVATE_REPO_TOKEN }}@github.com/${{ github.repository_owner }}/panxcz-keystore.git /tmp/keystore-clone || true
+          if [ -f /tmp/keystore-clone/keystore/panxcz-release.jks ]; then
+            cp /tmp/keystore-clone/keystore/panxcz-release.jks app/keystore/
+            ./gradlew :app:assembleRelease -PsigningEnabled=true -PstorePass=${{ secrets.KEYSTORE_PASSWORD }} -Palias=panxcz_release -PkeyPass=${{ secrets.KEYSTORE_PASSWORD }} --stacktrace
+          fi
+        env:
+          ANDROID_HOME: ${{ env.ANDROID_HOME }}

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/explorer_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="4dp">
+
+    <TextView
+        android:id="@+id/explorer_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="panxcz Explorer — IL2CPP Class / Field / Method"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:padding="4dp" />
+
+    <EditText
+        android:id="@+id/explorer_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Class name (e.g. Hero, PlayerData)" />
+
+    <Button
+        android:id="@+id/explorer_search"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Explore" />
+
+    <Button
+        android:id="@+id/explorer_dump"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Dump Assembly-CSharp" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+        <TextView
+            android:id="@+id/explorer_output"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="10sp"
+            android:typeface="monospace"
+            android:padding="4dp" />
+    </ScrollView>
+</LinearLayout>

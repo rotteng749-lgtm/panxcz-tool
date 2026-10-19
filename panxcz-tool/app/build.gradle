@@ -1,0 +1,77 @@
+plugins {
+    id "com.android.application"
+}
+
+configurations.configureEach {
+    exclude group: "org.jetbrains.kotlin", module: "kotlin-stdlib-jdk7"
+    exclude group: "org.jetbrains.kotlin", module: "kotlin-stdlib-jdk8"
+}
+
+android {
+    namespace "catch_.me_.if_.you_.can_"
+    compileSdk 36
+    buildToolsVersion "36.0.0"
+
+    defaultConfig {
+        applicationId "catch_.me_.if_.you_.can_"
+        minSdk 21
+        targetSdk 36
+        versionCode 140
+        versionName "14.0-spoofed"
+    }
+
+    // Signing opsional: aktifin dengan -PsigningEnabled=true -PstorePass=... -Palias=... -PkeyPass=...
+    // Keystore ada di repo private "panxcz-keystore" (tidak ikut commit ke repo ini).
+    def ksFile = file("keystore/panxcz-release.jks")
+    signingConfigs {
+        release {
+            if (project.hasProperty("signingEnabled") && project.property("signingEnabled") == "true" && ksFile.exists()) {
+                storeFile ksFile
+                storePassword project.findProperty("storePass") ?: "panxczkey"
+                keyAlias project.findProperty("alias") ?: "panxcz_release"
+                keyPassword project.findProperty("keyPass") ?: "panxczkey"
+            }
+        }
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+            if (project.hasProperty("signingEnabled") && project.property("signingEnabled") == "true" && ksFile.exists()) {
+                signingConfig signingConfigs.release
+            }
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    packaging {
+        resources {
+            excludes += ["/META-INF/{AL2.0,LGPL2.1}"]
+        }
+    }
+
+    sourceSets {
+        main {
+            manifest.srcFile "src/main/AndroidManifest.xml"
+            java.srcDirs = ["src/main/java"]
+            res.srcDirs = ["src/main/res"]
+            assets.srcDirs = ["src/main/assets"]
+            jniLibs.srcDirs = ["src/main/jniLibs"]
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: "libs", include: ["*.jar", "*.aar"])
+    // Reconstruction ini nol import androidx (cuma android.* + android.fix.*),
+    // jadi nggak butuh androidx sama sekali -- dan ini bikin build bisa jalan
+    // full-offline tanpa download apa pun.
+}

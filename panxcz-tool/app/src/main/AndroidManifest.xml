@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="catch_.me_.if_.you_.can_">
+
+    <uses-permission android:name="android.permission.ACCESS_SUPERUSER"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.GET_TASKS"/>
+    <uses-permission android:name="android.permission.READ_LOGS"/>
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
+    <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+
+    <application
+        android:allowBackup="false"
+        android:hardwareAccelerated="false"
+        android:icon="@drawable/ic_gg_48dp"
+        android:isGame="true"
+        android:label="panxcz-tool"
+        android:name="catch_.me_.if_.you_.can_.Application"
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:theme="@style/FixTheme">
+
+        <meta-data android:name="android.max_aspect" android:value="3.0"/>
+
+        <receiver
+            android:enabled="true"
+            android:exported="true"
+            android:name="catch_.me_.if_.you_.can_.Receiver">
+            <intent-filter>
+                <action android:name="catch_.me_.if_.you_.can_"/>
+            </intent-filter>
+        </receiver>
+
+        <activity
+            android:configChanges="density|fontScale|keyboard|keyboardHidden|layoutDirection|locale|mcc|mnc|navigation|orientation|screenLayout|screenSize|smallestScreenSize|touchscreen|uiMode"
+            android:exported="true"
+            android:hardwareAccelerated="false"
+            android:icon="@mipmap/ic_sw_48dp"
+            android:label="Game"
+            android:launchMode="singleInstance"
+            android:name="catch_.me_.if_.you_.can_.MainActivity"/>
+
+        <activity
+            android:configChanges="density|fontScale|keyboard|keyboardHidden|layoutDirection|locale|mcc|mnc|navigation|orientation|screenLayout|screenSize|smallestScreenSize|touchscreen|uiMode"
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:icon="@mipmap/ic_hw_48dp"
+            android:label="Game"
+            android:launchMode="singleInstance"
+            android:name="catch_.me_.if_.you_.can_.ActivityMain">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+        <provider
+            android:authorities="catch_.me_.if_.you_.can_"
+            android:exported="false"
+            android:grantUriPermissions="true"
+            android:name="catch_.me_.if_.you_.can_.FileProvider"/>
+
+        <service
+            android:exported="false"
+            android:name="catch_.me_.if_.you_.can_.AnalyticsService"/>
+
+    </application>
+
+</manifest>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="LargeText" parent="@android:style/TextAppearance.Large">
+        <item name="android:textColor">#ffffffff</item>
+    </style>
+    <style name="MediumText" parent="@android:style/TextAppearance.Medium">
+        <item name="android:textColor">#ffffffff</item>
+    </style>
+    <style name="SmallText" parent="@android:style/TextAppearance.Small">
+        <item name="android:textColor">#ffffffff</item>
+    </style>
+    <style name="Separator" parent="@android:style/TextAppearance.Small">
+        <item name="android:textColor">#ffaaaaaa</item>
+    </style>
+    <style name="FixTheme" parent="@android:style/Theme">
+        <item name="android:listPreferredItemHeight">48.0dip</item>
+        <item name="android:textColor">#ffffffff</item>
+    </style>
+    <style name="DarkFixTheme" parent="@style/FixTheme">
+        <item name="android:alertDialogStyle">@style/DarkAlertDialog</item>
+    </style>
+    <style name="DarkAlertDialog">
+        <item name="android:fullDark">@drawable/popup_full_dark</item>
+        <item name="android:topDark">@drawable/popup_top_dark</item>
+        <item name="android:centerDark">@drawable/popup_center_dark</item>
+        <item name="android:bottomDark">@drawable/popup_bottom_dark</item>
+        <item name="android:fullBright">@drawable/popup_full_dark</item>
+        <item name="android:topBright">@drawable/popup_top_dark</item>
+        <item name="android:centerBright">@drawable/popup_center_dark</item>
+        <item name="android:bottomBright">@drawable/popup_bottom_dark</item>
+        <item name="android:bottomMedium">@drawable/popup_bottom_dark</item>
+        <item name="android:centerMedium">@drawable/popup_center_dark</item>
+    </style>
+    <style name="ListItemText" parent="@style/MediumText" />
+</resources>
