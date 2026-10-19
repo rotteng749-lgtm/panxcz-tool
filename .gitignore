@@ -1,0 +1,24 @@
+# Public repo build artifacts (except APK for reference)
+*.jks
+*.keystore
+keystore/*.jks
+# Gradle / build
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.properties
+!gradlew
+!gradlew.bat
+# IDE
+.idea/
+*.iml
+.vscode/
+# OS
+.DS_Store
+.Thumbnails
+# Logs
+*.log
+# Downloaded dependencies / temp
+/tmp/
+/GameGuardian (96.0) Src.zip
+/gradle-8.*
+/gradle-9.*

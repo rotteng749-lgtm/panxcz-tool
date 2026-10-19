@@ -1,0 +1,100 @@
+name: Build & Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: ./panxcz-libtool
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup NDK
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r28b
+        id: ndk
+
+      - name: Build arm64-v8a
+        run: |
+          ${{ steps.ndk.outputs.ndk-path }}/ndk-build \
+            NDK_PROJECT_PATH=. \
+            APP_BUILD_SCRIPT=./jni/Android.mk \
+            NDK_APPLICATION_MK=./jni/Application.mk \
+            NDK_OUT=./obj-arm64 \
+            NDK_LIBS_OUT=./libs-arm64 \
+            APP_ABI=arm64-v8a \
+            -j4
+
+      - name: Stage artifacts
+        run: |
+          mkdir -p artifacts/arm64-v8a
+          cp libs-arm64/arm64-v8a/panxcz_libtool artifacts/arm64-v8a/panxcz_libtool.sh
+          cp libs-arm64/arm64-v8a/panxcz_libtool artifacts/arm64-v8a/panxcz_libtool.elf
+          cp libs-arm64/arm64-v8a/panxcz_libtool artifacts/arm64-v8a/panxcz_libtool
+          chmod +x artifacts/arm64-v8a/*
+
+      - name: Verify 16KB page alignment
+        run: |
+          echo "=== 16KB page-size check ==="
+          for f in artifacts/arm64-v8a/panxcz_libtool*; do
+            [ -f "$f" ] || continue
+            echo "--- $f ---"
+            readelf -lW "$f" | awk '/LOAD/ {for(i=1;i<=NF;i++) if($i ~ /^0x/) align=$i} END {if(align=="0x4000") print "PASS"; else {print "FAIL: " align; exit 1}}' || exit 1
+          done
+          echo "ALL PASS: every LOAD segment aligned to 16KB"
+
+      - name: Verify symbol exports
+        run: |
+          echo "=== Symbol export check ==="
+          for map in menu.map.txt dumper.map.txt zygisk.map.txt; do
+            echo "--- $map ---"
+            for sym in $(grep -v '^#' "$map" | awk '{print $2}'); do
+              found=0
+              for f in artifacts/arm64-v8a/*; do
+                [ -f "$f" ] || continue
+                if readelf --dyn-syms -W "$f" 2>/dev/null | grep -q " ${sym}$"; then
+                  found=1; break
+                fi
+              done
+              if [ $found -eq 0 ]; then
+                echo "MISSING: $sym (not exported in any binary)"
+                exit 1
+              fi
+            done
+          done
+          echo "ALL PASS: every map entry exported"
+
+      - name: Create release package
+        run: |
+          VERSION=$(git describe --tags --always)
+          mkdir -p release
+          tar -czf release/panxcz-libtool-${VERSION}-arm64.tar.gz -C artifacts/arm64-v8a .
+          ls -lh release/
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: panxcz-libtool-${{ github.ref_name }}
+          path: panxcz-libtool/release/
+          retention-days: 90
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/v')
+        with:
+          files: panxcz-libtool/release/*
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
